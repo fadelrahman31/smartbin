@@ -86,6 +86,33 @@ def getDataDevice(id):
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def getAllDataDevice():
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        get_query = """select * from device"""
+        cursor.execute(get_query)
+        results = cursor.fetchall()
+        #print("result ", results)
+        return results
+
+    except (Exception, psycopg2.Error) as error :
+        print ("Error while fetching data", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
 def postDataTPS(id_tps, waktu, humidity, temp, latitude, longitude, city):
     try:
         connection = psycopg2.connect(user = os.getenv("DB_USER"),
@@ -106,6 +133,36 @@ def postDataTPS(id_tps, waktu, humidity, temp, latitude, longitude, city):
         connection.commit()
         #count = cursor.rowcount()
         print("Data berhasil dimasukkan kedalam tabel datatps")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
+def postDataJadwal(a,b,c,d,e,f,g,h,i):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ INSERT INTO jadwal (idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (a,b,int(c),int(d),int(e),int(f),g,h,i)
+        cursor.execute(post_query, data_insert)
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("Data berhasil dimasukkan kedalam tabel jadwal")
 
     except (Exception, psycopg2.Error) as error :
         print ("gagal untuk insert data ke tabel", error)
@@ -146,6 +203,13 @@ def api_device(id_device):
     result = str(data)
     return result
 
+#method get  retrieve all device data
+@app.route('/device')
+def api_all_device():
+    data = getAllDataDevice()
+    result = str(data)
+    return result
+
 #method post transmit data tps
 @app.route('/data/tps/<id_tps>', methods = ['POST'])
 def api_transmit_data(id_tps):
@@ -167,6 +231,28 @@ def api_transmit_data(id_tps):
         #untuk notes, a = {'id_tps': 'tps01', 'waktu': '9-april-2020 13.45WIB', 'humidity': '33.0', 'temp': '35.5', 'latitude': '126.0','longitude': '97.0', 'city': 'Bandung'}
     else:
         return "415:: Unsupported Media Type!"
+
+#method post create new schedule
+@app.route('/jadwal/<idlog>', methods = ['POST'])
+def api_new_schedule(idlog):
+    if request.headers['Content-Type'] == 'application/json':
+        #respond here
+        a = request.json
+        idlog           = a['idlog']
+        idjalur         = a['idjalur']
+        pic             = a['pic']
+        total_station   = a['total_station']
+        total_capacity  = a['total_capacity']
+        total_petugas   = a['total_petugas']
+        tanggal         = a['tanggal']
+        jam_mulai       = a['jam_mulai']
+        jam_selesai     = a['jam_selesai']
+        #execute the query
+        postDataJadwal(idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai)
+        return "Berhasil mnyimpan data Jadwal " + idlog +" !"
+    else:
+        return "415:: Unsupported Media Type!"
+
 
 if __name__ == '__main__':
     app.run()
