@@ -1,13 +1,18 @@
 import psycopg2
 from flask import Flask
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 def getDataTPS(id):
     try:
-        connection = psycopg2.connect(user = "ffgdwapi",
-                                    password = "iAAuwugo4XEjormkKGmzW14-N6AWmDzD",
-                                    host = "drona.db.elephantsql.com",
-                                    port = "5432",
-                                    database = "ffgdwapi")
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
 
         cursor = connection.cursor()
 
@@ -29,11 +34,12 @@ def getDataTPS(id):
 
 def getDataDevice(id):
     try:
-        connection = psycopg2.connect(user = "ffgdwapi",
-                                    password = "iAAuwugo4XEjormkKGmzW14-N6AWmDzD",
-                                    host = "drona.db.elephantsql.com",
-                                    port = "5432",
-                                    database = "ffgdwapi")
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
 
         cursor = connection.cursor()
 
