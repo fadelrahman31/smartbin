@@ -113,6 +113,33 @@ def getAllDataDevice():
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def getAllScheduleData():
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        get_query = """select * from jadwal"""
+        cursor.execute(get_query)
+        results = cursor.fetchall()
+        #print("result ", results)
+        return results
+
+    except (Exception, psycopg2.Error) as error :
+        print ("Error while fetching data", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
 def postDataTPS(id_tps, waktu, humidity, temp, latitude, longitude, city):
     try:
         connection = psycopg2.connect(user = os.getenv("DB_USER"),
@@ -207,6 +234,13 @@ def api_device(id_device):
 @app.route('/device')
 def api_all_device():
     data = getAllDataDevice()
+    result = str(data)
+    return result
+
+#method get retrieve all schedule data
+@app.route('/jadwal')
+def api_all_schedule():
+    data = getAllScheduleData()
     result = str(data)
     return result
 
