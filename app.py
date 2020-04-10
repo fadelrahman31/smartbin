@@ -200,6 +200,35 @@ def postDataJadwal(a,b,c,d,e,f,g,h,i):
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def postDataDevice(a,b,c):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ INSERT INTO device (id_device, id_tps, is_connected) VALUES (%s,%s,%s)"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (a,b,c)
+        cursor.execute(post_query, data_insert)
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("Data berhasil dimasukkan kedalam tabel device")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
 
 
 app = Flask(__name__)
@@ -287,6 +316,21 @@ def api_new_schedule(idlog):
     else:
         return "415:: Unsupported Media Type!"
 
+#method post untuk add device
+@app.route('/device/<id_device>', methods=['POST'])
+def api_new_device(id_device):
+    if request.headers['Content-Type'] == 'application/json':
+        #something here
+        a = request.json
+        id_device    = a['id_device']
+        id_tps       = a['id_tps']
+        is_connected = a['is_connected']
+        #execute the query
+        postDataDevice(id_device, id_tps, is_connected)
+        return "Berhasil menyimpan data Device " + id_device + " !"
+
+    else:
+        return "415: Unsupported Media Type!"
 
 if __name__ == '__main__':
     app.run()
