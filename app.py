@@ -230,6 +230,96 @@ def postDataDevice(a,b,c):
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def postNewUser(a,b,c,d):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ INSERT INTO pengguna (no_pegawai, username, password, tipe_pegawai) VALUES (%s,%s,%s,%s)"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (int(a),b,c,d)
+        cursor.execute(post_query, data_insert)
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("Data berhasil dimasukkan kedalam tabel pengguna")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
+def postNewTPS(a,b,c,d,e,f,g):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ INSERT INTO tps (id_tps, nama, kelurahan, kecamatan, region, is_full, alokasi_petugas) VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (a,b,c,d,e,f,int(g))
+        cursor.execute(post_query, data_insert)
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("Data berhasil dimasukkan kedalam tabel pengguna")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
+def putAlokasiPetugas(a,b):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ UPDATE tps SET alokasi_petugas = %s where id_tps = %s"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (int(a),b)
+        cursor.execute(post_query, data_insert)
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("Data berhasil dimasukkan kedalam tabel pengguna")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
 
 app = Flask(__name__)
 
@@ -331,6 +421,58 @@ def api_new_device(id_device):
 
     else:
         return "415: Unsupported Media Type!"
+
+#method post untuk add new pengguna
+@app.route('/user/<username>', methods=['POST'])
+def api_new_user(username):
+    if request.headers['Content-Type'] == 'application/json':
+        #something here
+        a = request.json
+        no_pegawai      = a['no_pegawai'] 
+        username        = a['username'] 
+        password        = a['password'] 
+        tipe_pegawai    = a['tipe_pegawai'] 
+        #execute the query
+        postNewUser(no_pegawai, username, password, tipe_pegawai)
+        return "Berhasil menyimpan data Pengguna Baru " + username + " !"
+    else:
+        return "415: Unsupported Media Type!"
+
+#method post untuk create new data tps
+@app.route('/tps/<id_tps>', methods=['POST'])
+def api_new_tps(id_tps):
+    if request.headers['Content-Type'] == 'application/json':
+        #something here
+        a = request.json
+        id_tps          = a['id_tps']
+        nama            = a['nama']
+        kelurahan       = a['kelurahan']
+        kecamatan       = a['kecamatan']
+        region          = a['region']
+        is_full         = a['is_full']
+        alokasi_petugas = a['alokasi_petugas']
+        #execute the query
+        postNewTPS(id_tps, nama, kelurahan, kecamatan, region, is_full, alokasi_petugas)
+        return "Berhasil menyimpan data TPS Baru " + id_tps + " !"
+
+    else:
+        return "415: Unsupported Media Type!"
+
+#method put update alokasi petugas
+@app.route('/tps/alokasi/<id_tps>', methods=['PUT'])
+def api_update_alokasi(id_tps):
+    if request.headers['Content-Type'] == 'application/json':
+        #something here
+        a = request.json
+        id_tps          = a['id_tps'] 
+        alokasi_petugas = a['alokasi_petugas']
+        #execute the query
+        putAlokasiPetugas(alokasi_petugas, id_tps)
+        return "Berhasil melakukan Update Alokasi Petugas di TPS " + id_tps + " !"
+
+    else:
+        return "415: Unsupported Media Type!" 
+
 
 if __name__ == '__main__':
     app.run()
