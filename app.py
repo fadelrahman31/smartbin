@@ -333,35 +333,35 @@ def api_root():
 def api_data(id_tps):
     data = getDataTPS(id_tps)
     result = str(data)
-    return result
+    return result, {'Content-Type':'application/json'}
 
 #method get retrieve all data tps
 @app.route('/data/tps')
 def api_all_data():
     data = getAllDataTPS()
     result = str(data)
-    return result
+    return result, {'Content-Type':'application/json'}
 
 #method get retrieve data device status
 @app.route('/device/<id_device>')
 def api_device(id_device):
     data = getDataDevice(id_device)
     result = str(data)
-    return result
+    return result, {'Content-Type':'application/json'}
 
 #method get  retrieve all device data
 @app.route('/device')
 def api_all_device():
     data = getAllDataDevice()
     result = str(data)
-    return result
+    return result, {'Content-Type':'application/json'}
 
 #method get retrieve all schedule data
 @app.route('/jadwal')
 def api_all_schedule():
     data = getAllScheduleData()
     result = str(data)
-    return result
+    return result, {'Content-Type':'application/json'}
 
 #method post transmit data tps
 @app.route('/data/tps/<id_tps>', methods = ['POST'])
@@ -383,7 +383,7 @@ def api_transmit_data(id_tps):
         return "Berhasil mnyimpan data dari TPS " + id_tps +" !"
         #untuk notes, a = {'id_tps': 'tps01', 'waktu': '9-april-2020 13.45WIB', 'humidity': '33.0', 'temp': '35.5', 'latitude': '126.0','longitude': '97.0', 'city': 'Bandung'}
     else:
-        return "415:: Unsupported Media Type!"
+        return "415:: Unsupported Media Type!",415
 
 #method post create new schedule
 @app.route('/jadwal/<idlog>', methods = ['POST'])
@@ -404,7 +404,7 @@ def api_new_schedule(idlog):
         postDataJadwal(idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai)
         return "Berhasil mnyimpan data Jadwal " + idlog +" !"
     else:
-        return "415:: Unsupported Media Type!"
+        return "415:: Unsupported Media Type!",415
 
 #method post untuk add device
 @app.route('/device/<id_device>', methods=['POST'])
@@ -420,7 +420,7 @@ def api_new_device(id_device):
         return "Berhasil menyimpan data Device " + id_device + " !"
 
     else:
-        return "415: Unsupported Media Type!"
+        return "415: Unsupported Media Type!",415
 
 #method post untuk add new pengguna
 @app.route('/user/<username>', methods=['POST'])
@@ -436,7 +436,7 @@ def api_new_user(username):
         postNewUser(no_pegawai, username, password, tipe_pegawai)
         return "Berhasil menyimpan data Pengguna Baru " + username + " !"
     else:
-        return "415: Unsupported Media Type!"
+        return "415: Unsupported Media Type!",415
 
 #method post untuk create new data tps
 @app.route('/tps/<id_tps>', methods=['POST'])
@@ -456,7 +456,7 @@ def api_new_tps(id_tps):
         return "Berhasil menyimpan data TPS Baru " + id_tps + " !"
 
     else:
-        return "415: Unsupported Media Type!"
+        return "415: Unsupported Media Type!",415
 
 #method put update alokasi petugas
 @app.route('/tps/alokasi/<id_tps>', methods=['PUT'])
@@ -471,7 +471,7 @@ def api_update_alokasi(id_tps):
         return "Berhasil melakukan Update Alokasi Petugas di TPS " + id_tps + " !"
 
     else:
-        return "415: Unsupported Media Type!" 
+        return "415: Unsupported Media Type!",415 
 
 
 if __name__ == '__main__':
