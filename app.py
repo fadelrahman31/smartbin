@@ -323,7 +323,8 @@ def putAlokasiPetugas(a,b):
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins":"*"}})
+app.config[]
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 #method index
