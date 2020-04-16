@@ -2,6 +2,7 @@ import psycopg2
 from flask import Flask, request, json
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -322,6 +323,7 @@ def putAlokasiPetugas(a,b):
 
 
 app = Flask(__name__)
+CORS(app)
 
 #method index
 @app.route('/')
