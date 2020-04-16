@@ -323,18 +323,19 @@ def putAlokasiPetugas(a,b):
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins":"*"}})
+CORS(app, resources={r"/api/*": {"origins":"*"}})
+#CORS(app, resources={r"/*": {"origins":"*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 #method index
 @app.route('/')
-@cross_origin()
+#@cross_origin()
 def api_root():
     return 'SMART BIN: This means our server is running'
 
 #method get retrieve data tps by id
 @app.route('/data/tps/<id_tps>')
-@cross_origin()
+#@cross_origin()
 def api_data(id_tps):
     data = getDataTPS(id_tps)
     result = str(data)
@@ -342,7 +343,7 @@ def api_data(id_tps):
 
 #method get retrieve all data tps
 @app.route('/data/tps')
-@cross_origin()
+#@cross_origin()
 def api_all_data():
     data = getAllDataTPS()
     result = str(data)
@@ -350,7 +351,7 @@ def api_all_data():
 
 #method get retrieve data device status
 @app.route('/device/<id_device>')
-@cross_origin()
+#@cross_origin()
 def api_device(id_device):
     data = getDataDevice(id_device)
     result = str(data)
@@ -358,7 +359,7 @@ def api_device(id_device):
 
 #method get  retrieve all device data
 @app.route('/device')
-@cross_origin()
+#@cross_origin()
 def api_all_device():
     data = getAllDataDevice()
     result = str(data)
@@ -366,7 +367,7 @@ def api_all_device():
 
 #method get retrieve all schedule data
 @app.route('/jadwal')
-@cross_origin()
+#@cross_origin()
 def api_all_schedule():
     data = getAllScheduleData()
     result = str(data)
