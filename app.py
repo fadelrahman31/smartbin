@@ -172,7 +172,7 @@ def postDataTPS(id_tps, waktu, humidity, temp, latitude, longitude, city):
                 connection.close()
                 print("PostgreSQL connection is closed")
 
-def postDataJadwal(a,b,c,d,e,f,g,h,i):
+def postDataJadwal(a,b,c,d,e,f,g,h,i,j):
     try:
         connection = psycopg2.connect(user = os.getenv("DB_USER"),
                                     password = os.getenv("DB_PASS"),
@@ -184,9 +184,9 @@ def postDataJadwal(a,b,c,d,e,f,g,h,i):
         cursor = connection.cursor()
 
         #run some SQL query
-        post_query = """ INSERT INTO jadwal (idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        post_query = """ INSERT INTO jadwal (idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai, target_station) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
         #data_insert = ('tps01', '9-April-2020', 750, 360)
-        data_insert = (a,b,int(c),int(d),int(e),int(f),g,h,i)
+        data_insert = (a,b,int(c),int(d),int(e),int(f),g,h,i,j)
         cursor.execute(post_query, data_insert)
 
         connection.commit()
@@ -416,8 +416,9 @@ def api_new_schedule(idlog):
         tanggal         = a['tanggal']
         jam_mulai       = a['jam_mulai']
         jam_selesai     = a['jam_selesai']
+        target_station  = a['target_station']
         #execute the query
-        postDataJadwal(idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai)
+        postDataJadwal(idlog, idjalur, pic, total_station, total_capacity, total_petugas, tanggal, jam_mulai, jam_selesai, target_station)
         return "Berhasil mnyimpan data Jadwal " + idlog +" !"
     else:
         return "415:: Unsupported Media Type!",415
