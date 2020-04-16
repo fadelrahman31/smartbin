@@ -1,4 +1,5 @@
 import psycopg2
+import json
 from flask import Flask, request, json
 from dotenv import load_dotenv
 import os
@@ -338,40 +339,45 @@ def api_root():
 #@cross_origin()
 def api_data(id_tps):
     data = getDataTPS(id_tps)
-    result = str(data)
-    return result, {'Content-Type':'application/json'}
+    #result = str(data)
+    res_json = json.dumps(data)
+    return res_json, {'Content-Type':'application/json'}
 
 #method get retrieve all data tps
 @app.route('/data/tps')
 #@cross_origin()
 def api_all_data():
     data = getAllDataTPS()
-    result = str(data)
-    return result, {'Content-Type':'application/json'}
+    #result = str(data)
+    res_json = json.dumps(data)
+    return res_json, {'Content-Type':'application/json'}
 
 #method get retrieve data device status
 @app.route('/device/<id_device>')
 #@cross_origin()
 def api_device(id_device):
     data = getDataDevice(id_device)
-    result = str(data)
-    return result, {'Content-Type':'application/json'}
+    #result = str(data)
+    res_json = json.dumps(data)
+    return res_json, {'Content-Type':'application/json'}
 
 #method get  retrieve all device data
 @app.route('/device')
 #@cross_origin()
 def api_all_device():
     data = getAllDataDevice()
-    result = str(data)
-    return result, {'Content-Type':'application/json'}
+    #result = str(data)
+    res_json = json.dumps(data)
+    return res_json, {'Content-Type':'application/json'}
 
 #method get retrieve all schedule data
 @app.route('/jadwal')
 #@cross_origin()
 def api_all_schedule():
     data = getAllScheduleData()
-    result = str(data)
-    return result, {'Content-Type':'application/json'}
+    #result = str(data)
+    res_json = json.dumps(data)
+    return res_json, {'Content-Type':'application/json'}
 
 #method post transmit data tps
 @app.route('/data/tps/<id_tps>', methods = ['POST'])
