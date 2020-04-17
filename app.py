@@ -349,6 +349,35 @@ def putAlokasiPetugas(a,b):
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def deleteDataTPS(a):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        
+        post_query = """DELETE FROM datatps WHERE id_tps = %s"""
+        cursor.execute(post_query, (a, ))
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("Data berhasil dimasukkan kedalam tabel pengguna")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk delete data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
 
 app = Flask(__name__)
 #CORS(app, resources={r"/api/*": {"origins":"*"}})
@@ -458,6 +487,14 @@ def api_new_schedule(idlog):
         return "Berhasil mnyimpan data Jadwal " + idlog +" !"
     else:
         return "415:: Unsupported Media Type!",415
+
+#method delete schedule
+@app.route('/data/tps/<id_tps>', methods = ['DELETE'])
+def api_del_datatps(id_tps):
+        #respond here
+        inpoot = str(id_tps)
+        deleteDataTPS(inpoot)
+        return "Berhasil menghapus data dari " + id_tps +" !"
 
 #method post untuk add device
 @app.route('/device/<id_device>', methods=['POST'])
