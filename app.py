@@ -169,6 +169,33 @@ def getAllTPSData():
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def getAllPengguna():
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        get_query = """select * from pengguna"""
+        cursor.execute(get_query)
+        results = cursor.fetchall()
+        #print("result ", results)
+        return results
+
+    except (Exception, psycopg2.Error) as error :
+        print ("Error while fetching data", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
 def postDataTPS(id_tps, waktu, humidity, temp, latitude, longitude, city):
     try:
         connection = psycopg2.connect(user = os.getenv("DB_USER"),
@@ -349,6 +376,66 @@ def putAlokasiPetugas(a,b):
                 connection.close()
                 print("PostgreSQL connection is closed")
 
+def putStatusTPSFull(a):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ UPDATE tps SET is_full = 'true' where id_tps = %s"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (a)
+        cursor.execute(post_query, (data_insert, ))
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("TPS Sudah Penuh!")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
+def putStatusTPSEmpty(a):
+    try:
+        connection = psycopg2.connect(user = os.getenv("DB_USER"),
+                                    password = os.getenv("DB_PASS"),
+                                    host = os.getenv("DB_HOST"),
+                                    port = os.getenv("DB_PORT"),
+                                    database = os.getenv("DATABASE")
+                                    )
+
+        cursor = connection.cursor()
+
+        #run some SQL query
+        post_query = """ UPDATE tps SET is_full = 'false' where id_tps = %s"""
+        #data_insert = ('tps01', '9-April-2020', 750, 360)
+        data_insert = (a)
+        cursor.execute(post_query, (data_insert, ))
+
+        connection.commit()
+        #count = cursor.rowcount()
+        print("TPS Sudah Kosong!")
+
+    except (Exception, psycopg2.Error) as error :
+        print ("gagal untuk insert data ke tabel", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
 def deleteDataTPS(a):
     try:
         connection = psycopg2.connect(user = os.getenv("DB_USER"),
@@ -444,6 +531,15 @@ def api_all_tps():
     res_json = json.dumps(data)
     return res_json, {'Content-Type':'application/json'}
 
+#method get retrieve all schedule data
+@app.route('/pengguna')
+#@cross_origin()
+def api_all_user():
+    data = getAllPengguna()
+    #result = str(data)
+    res_json = json.dumps(data)
+    return res_json, {'Content-Type':'application/json'}
+
 #method post transmit data tps
 @app.route('/data/tps/<id_tps>', methods = ['POST'])
 def api_transmit_data(id_tps):
@@ -461,6 +557,7 @@ def api_transmit_data(id_tps):
         city        = a['city']
         #execute the Query with Fuction
         postDataTPS(id_tps, waktu, humidity, temp, latitude, longitude, city)
+        putStatusTPSFull(id_tps)
         return "Berhasil mnyimpan data dari TPS " + id_tps +" !"
         #untuk notes, a = {'id_tps': 'tps01', 'waktu': '9-april-2020 13.45WIB', 'humidity': '33.0', 'temp': '35.5', 'latitude': '126.0','longitude': '97.0', 'city': 'Bandung'}
     else:
@@ -494,6 +591,7 @@ def api_del_datatps(id_tps):
         #respond here
         inpoot = str(id_tps)
         deleteDataTPS(inpoot)
+        putStatusTPSEmpty(inpoot)
         return "Berhasil menghapus data dari " + id_tps +" !"
 
 #method post untuk add device
